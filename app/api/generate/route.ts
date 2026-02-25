@@ -51,11 +51,14 @@ Do not include any text outside the JSON.
     const content = completion.choices[0].message.content
 
     if (!content) {
-      throw new Error("No response from AI")
+    throw new Error("No response from AI")
     }
 
-    // Safely parse JSON
-    const parsed = JSON.parse(content)
+    // Clean markdown code blocks if they exist
+    const cleaned = content.replace(/```json|```/g, "").trim()
+
+    // Parse safely
+    const parsed = JSON.parse(cleaned)
 
     return NextResponse.json(parsed)
 
