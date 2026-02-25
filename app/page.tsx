@@ -11,22 +11,33 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<any[]>([])
 
-  async function handleGenerate() {
-    if (!query) return
+async function handleGenerate() {
+  if (!query) return
+
+  try {
     setLoading(true)
 
-    // Fake delay for now
-    setTimeout(() => {
-      setResults([
-        {
-          title: "Batman: Year One",
-          reason: "Great grounded starting point.",
-          issues: ["Batman #404", "Batman #405", "Batman #406", "Batman #407"]
-        }
-      ])
-      setLoading(false)
-    }, 1500)
+    const res = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query }),
+    })
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch reading order")
+    }
+
+    const data = await res.json()
+
+    setResults(data.startingPoints)
+  } catch (error) {
+    console.error(error)
+  } finally {
+    setLoading(false)
   }
+}
 
   return (
     <main className="max-w-3xl mx-auto py-20 px-4 space-y-8">
