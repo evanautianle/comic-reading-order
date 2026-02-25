@@ -13,30 +13,17 @@ export default function Home() {
 
 async function handleGenerate() {
   if (!query) return
+  setLoading(true)
 
-  try {
-    setLoading(true)
+  const res = await fetch("/api/generate", {
+    method: "POST",
+    body: JSON.stringify({ query }),
+  })
 
-    const res = await fetch("/api/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query }),
-    })
+  const data = await res.json()
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch reading order")
-    }
-
-    const data = await res.json()
-
-    setResults(data.startingPoints)
-  } catch (error) {
-    console.error(error)
-  } finally {
-    setLoading(false)
-  }
+  setResults(data.startingPoints)
+  setLoading(false)
 }
 
   return (
